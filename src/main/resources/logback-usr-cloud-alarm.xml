@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- 定义日志文件 输入位置 -->
+<!--    <property name="log_dir" value="/mnt/usr/usr_cloud/cloud_alarm/UsrCloud_Alarm_logs"/>-->
+    <property name="log_dir" value="."/>
+    <property name="log_file_name" value="usr-cloud-alarm"/>
+    <!-- 日志最大的历史 5天 -->
+    <property name="maxHistory" value="5"/>
+    <!-- DeBug日志最大的历史 3天 -->
+    <property name="maxDeBugHistory" value="3"/>
+
+
+    <!-- 控制台打印日志的相关配置 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <!-- 日志格式 -->
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%t] %-5p %c\(%L\) - %m%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 文件保存日志的相关配置 -->
+    <appender name="USR_CLOUD_ALARM_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 如果是 true，日志被追加到文件结尾，如果是 false，清空现存文件，默认是true-->
+        <append>true</append>
+        <!-- 保存日志文件的路径 -->
+        <file>${log_dir}/${log_file_name}.log</file>
+        <!-- 日志格式 -->
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%t] %-5p %c\(%L\) - %m%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <!-- 循环政策：基于时间创建日志文件 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 日志文件名格式 -->
+            <fileNamePattern>${log_dir}/${log_file_name}.%d.log</fileNamePattern>
+            <!-- 最大保存时间：365天-->
+            <maxHistory>3</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <!--需要将日志单独输出的包路径-common-->
+    <!--<logger name="cn.usr.common" additivity="false" level="DEBUG">-->
+        <!--<appender-ref ref="CONSOLE" />-->
+        <!--<appender-ref ref="USR_CLOUD_API_LOG"/>-->
+    <!--</logger>-->
+    <logger name="org.springframework" level="WARN"/>
+    <logger name="com.alibaba.druid" level="WARN"/>
+    <logger name="tk.mybatis.springboot.mapper" additivity="false" level="DEBUG">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="USR_CLOUD_ALARM_LOG"/>
+    </logger>
+    <!-- 基于dubug处理日志：具体控制台或者文件对日志级别的处理还要看所在appender配置的filter，如果没有配置filter，则使用root配置 -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="USR_CLOUD_ALARM_LOG" />
+    </root>
+</configuration>
